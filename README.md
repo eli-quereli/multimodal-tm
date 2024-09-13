@@ -1,2 +1,4 @@
 # multimodal-tm
-Multimodal Topic Modeling of Conspiracy Theories on Telegram
+
+Code for the paper "Multimodal Topic Modeling of Conspiracy Theories on Telegram" (Anonymous Submission)
+
