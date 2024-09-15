@@ -1,4 +1,6 @@
 # multimodal-tm
 
-Code for the paper "Multimodal Topic Modeling of Conspiracy Theories on Telegram" (Anonymous Submission)
+Code for the paper "More than Memes:  A Multimodal Topic Modeling Approach to Conspiracy Theories on Telegram" (Anonymous Submission)
 
+## Abstract
+Research on conspiracy theories and related content online has traditionally focused on textual data. To address the increasing prevalence of (audio-)visual data on social media, and to capture the evolving and dynamic nature of this communication, researchers have begun to explore the potential of unsupervised approaches for analyzing multimodal online content. Our research contributes to this field by exploring the potential of multimodal topic modeling for analyzing conspiracy theories in German-language Telegram channels. Our work uses the BERTopic topic modeling approach in combination with CLIP for the analysis of textual and visual data. We analyze a corpus of ∼40, 000 Telegram messages posted in October 2023 in 571 German-language Telegram channels known for disseminating conspiracy theories and other deceptive content. We explore the potentials and challenges of this approach for studying a medium-sized corpus of user-generated, text-image online content. We offer insights into the dominant topics across modalities, different text and image genres discovered during the analysis, quantitative inter- modal topic analyses, and a qualitative case study of textual, visual, and multimodal narrative strategies in the communication of conspiracy theories.
