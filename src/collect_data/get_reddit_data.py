@@ -1,10 +1,8 @@
 import config
 from datetime import datetime
-from pathlib import Path
 import pandas as pd
 import praw
 import time
-import os
 import logging
 import requests
 import sys
@@ -17,6 +15,7 @@ def setup_client():
             client_id=config.REDDIT_CLIENT_ID,
             client_secret=config.REDDIT_SECRET,
             user_agent=config.REDDIT_USER_AGENT,
+            ratelimit_seconds=300
         )
     return reddit
 
@@ -34,26 +33,6 @@ def setup_logging(method, log_file_prefix: str = "get_reddit_data"):
     logging.info(f"Logging started for {method} method.")
 
 
-def download_image(post, img_dir, subreddit_name):
-
-    download_status = "todo"  # set default status
-    try:
-        response = requests.get(post.url)
-        if response.status_code == 200:  # Successful request
-            # Save the image
-            file_name = f"{img_dir}/{subreddit_name}_{post.id}.jpg"
-            
-            with open(file_name, 'wb') as f:
-                f.write(response.content)
-                logging.info(f"Downloaded: {post.url}")
-                download_status = "success"
-        else:
-            download_status = "failed"
-    except Exception as e:
-        logging.error(e)
-    return download_status
-
-
 def setup_subreddits(method):  # method = 'stream' or 'hot'
 
     if method == 'stream':  # combined subreddits as string
@@ -65,7 +44,42 @@ def setup_subreddits(method):  # method = 'stream' or 'hot'
     return subreddits
 
 
-def create_post(post, download_status="no image"): 
+def download_image(post, img_dir, subreddit_name):
+    download_status = "todo"  # set default status
+    try:
+        response = requests.get(post.url)
+        file_name = f"{img_dir}/{subreddit_name}_{post.id}.jpg"
+        with open(file_name, 'wb') as f:
+            f.write(response.content)
+            logging.info(f"Downloaded: {post.url}")
+            download_status = "success"
+    except Exception as e:
+        logging.error(e)
+        download_status = "failed"
+    return download_status
+
+
+def download_gallery(post, data_dir):
+    download_status = "todo"  # set default status
+    gallery_dir = data_dir / 'galleries'
+    try:
+        for idx, media in enumerate(post.gallery_data['items']):
+            media_id = media['media_id']
+            img_url = post.media_metadata[media_id]['s']['u']
+            img_data = requests.get(img_url).content
+            file_name = f"{gallery_dir}/{post.subreddit.display_name}_{post.id}_gallery_{idx}.png"
+            with open(file_name, 'wb') as img_file:
+                img_file.write(img_data)
+        logging.info(f"Downloaded gallery for post: {post.id}.")
+        download_status = "success"
+    except Exception as e:
+        logging.error("Error fetching gallery.")
+        logging.error(e)
+        download_status = "failed"
+    return download_status
+
+
+def create_post(post, download_status="no image"):
     return {
                 "subreddit": post.subreddit.display_name,
                 "post_id": post.id,
@@ -98,35 +112,33 @@ def get_reddit_messages(method, data_dir, limit=None):
     reddit = setup_client()  # set up reddit client
 
     if method == 'stream':
-        subreddit_name = subreddits  # single string combining all subreddits
-        logging.info(f"STARTING SCRIPT TO COLLECT DATA FROM {subreddit_name}")
+        # subreddit_name = subreddits  # single string combining all subreddits
+        # print(subreddit_name)
+        logging.info(f"STARTING SCRIPT TO COLLECT DATA FROM {subreddits}")
         posts_data = []
-        subreddit = reddit.subreddit(subreddit_name)
+        subreddit = reddit.subreddit(subreddits)
         logging.info(f"Getting data from subreddit: {subreddit.display_name}")
 
-        for post in subreddit.submissions.stream():  # use submissions.stream() to get a stream of posts
-            counter = 0 # counter to keep track of number of posts collected
+        counter = 0  # counter to keep track of number of posts collected
+        for post in subreddit.stream.submissions():  # use stream.submissions() to get a stream of posts
             download_status = "no image"
             # download image if post.url is an image
             if post.url.endswith(('jpg', 'png', 'jpeg')):
                 download_status = download_image(post, img_dir, post.subreddit.display_name)
-                # TODO GALLERY IMAGES
-
+            if 'gallery' in post.url:
+                download_status = download_gallery(post, data_dir)
             # Append relevant post data to list
             post = create_post(post, download_status)
             posts_data.append(post)
-
             counter += 1
-        if counter % 100 == 0:
-            save_results(data_dir, posts_data, counter)
-            posts_data = []  # Reset posts_data to collect new data
-        time.sleep(1)
-
+            if counter % 100 == 0:  # save data every 100 posts
+                save_results(data_dir, posts_data, counter)
+                posts_data = []  # Reset posts_data to collect new data
+              
     elif method == 'hot':
-        
         for subreddit_name in subreddits:
             logging.info(f"STARTING SCRIPT TO COLLECT DATA FROM {subreddit_name}")
-            try: 
+            try:
                 subreddit = reddit.subreddit(subreddit_name)
                 logging.info(f"Getting data from subreddit: {subreddit.display_name}")
 
@@ -138,7 +150,7 @@ def get_reddit_messages(method, data_dir, limit=None):
                     if post.url.endswith(('jpg', 'png', 'jpeg')):
                         download_status = download_image(post, img_dir, post.subreddit.display_name)
                     if 'gallery' in post.url:
-                        download_status = 'gallery'
+                        download_status = download_gallery(post, data_dir)
                     # Append relevant post data to list
                     post = create_post(post, download_status)
                     posts_data.append(post)
@@ -153,4 +165,3 @@ def get_reddit_messages(method, data_dir, limit=None):
                 print(f"Failed to get subreddit: {subreddit}")
                 print(e)
         time.sleep(5)  # sleep 5 seconds after each subreddit
-

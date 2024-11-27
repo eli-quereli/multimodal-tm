@@ -27,10 +27,16 @@ def main():
 
     print("Setting up logging...")
     setup_logging(args.method)
+    print("Starting data collection...")
     start = time.time()
     try:
-        logging.info(f"Getting data using method {args.method.lower()}, writing results to: {data_dir}, limit: {args.limit}")
-        get_reddit_messages(method=args.method, data_dir=data_dir, limit=args.limit)
+        logging.info(
+            f"""Getting data using method {args.method.lower()},
+            writing results to: {data_dir}, limit: {args.limit}""")
+        get_reddit_messages(
+            method=args.method,
+            data_dir=data_dir,
+            limit=args.limit)
     except Exception as e:
         print("Process failed.")
         print(e)
@@ -38,7 +44,9 @@ def main():
         logging.error(e)
     stop = time.time()
     print('Done')
-    logging.info(f"Time elapsed: {time.strftime('%H:%M:%S', time.gmtime(stop - start))}")
+    logging.info(
+        f"Time elapsed: {time.strftime('%H:%M:%S', time.gmtime(stop - start))}"
+        )
 
 
 if __name__ == '__main__':
