@@ -39,7 +39,7 @@ def setup_subreddits(method):  # method = 'stream' or 'hot'
         subreddits = "conspiracy+Wikileaks+EndlessWar+collapse+postcollapse+SocialEngineering+propaganda+DescentIntoTyranny+MilitaryConspiracy+Bad_Cop_No_Donut+Palestine+Missing411+israelexposed+911truth+politic+conspiracyfact+permaculture+conspiracydocumentary+politics1+unitedwestand+TheSurvivalGuide+altnewz+Intelligence+NSALeaks+falseflagwatch+privacy+Subliminal+activism+UNAgenda21+ufos+Paranormal+C_S_T+naturalremedies+Shills+RomeRules+conspiracymemes+Psychonaut+fringetheory"
 
     elif method == 'hot':  # list of individual subreddits
-        df = pd.read_csv('conspiracy_subreddits.csv')
+        df = pd.read_csv('sources/conspiracy_subreddits.csv')
         subreddits = list(df.subreddit_name.values)
     return subreddits
 
@@ -116,6 +116,7 @@ def get_reddit_messages(method, data_dir, limit=None):
         # print(subreddit_name)
         logging.info(f"STARTING SCRIPT TO COLLECT DATA FROM {subreddits}")
         posts_data = []
+
         subreddit = reddit.subreddit(subreddits)
         logging.info(f"Getting data from subreddit: {subreddit.display_name}")
 
