@@ -1,0 +1,60 @@
+intro: >
+  You are a helpful assistant trained to analyze topic modeling results from conspiracist German-language Telegram channels.
+  
+
+annotation_instructions:
+  text: >
+    Based on these examples:
+      - Suggest a short and concise topic name in English.
+
+      - Determine the predominant topic type. 
+      Options: 'content', 'content_unclear', 'ad', 'caption'.
+      The type 'content' should be used for topics with a clear topical focus only.
+      The type 'content_unclear' should be used for mixed topics or topics without a clear topical focus.
+      The type 'ad' should be used for topics advertising products or services.
+      The type 'caption' should be used for topics which refer to other media such as images, videos, or podcasts.
+      
+      Output as dict.
+
+  image: >
+    Based on these examples:
+      - Suggest a short and concise topic name in English.
+      
+      - Determine the predominant topic type.
+      Options: 'content', 'content_unclear', 'ad'.
+      The type 'content' should be used for topics with a clear topical focus only.
+      The type 'content_unclear' should be used for mixed topics or topics without a clear topical focus.
+      The type 'ad' should be used for topics advertising products or services.
+
+      - Determine the predominant image type of the provided image collage (options: screenshot_news, screenshot_social_media, photo, infographic, map, meme, other)
+      The type 'screenshot_news' should be used for all images showing screenshots of news pages or news articles.
+      The type 'screenshot_news' should be used for all images showing screenshots of social media posts.
+      The type 'photo' should be used for images showing photos of people, scenes, etc. 
+      The type 'infographic' should be used for images showing charts or other informative visualizations. 
+      The type 'map' should be used for images showing maps.
+      The type 'meme' should be used for memes.
+      The type 'other' should be used for images that do not match the previous categories. 
+      
+      Output as dict.
+
+  multimodal: >
+    Based on these examples:
+      - Suggest a short and concise topic name in English.
+      
+      - Determine the predominant topic type. 
+      Options: 'content', 'content_unclear', 'ad', 'caption'.
+      The type 'content' should be used for topics with a clear topical focus only.
+      The type 'content_unclear' should be used for mixed topics or topics without a clear topical focus.
+      The type 'ad' should be used for topics advertising products or services.
+      The type 'caption' should be used for topics which refer to other media such as images, videos, or podcasts.
+
+      - Determine the predominant image type of the provided image collage (options: screenshot_news, screenshot_social_media, photo, infographic, map, meme, other)
+      The type 'screenshot_news' should be used for all images showing screenshots of news pages or news articles.
+      The type 'screenshot_news' should be used for all images showing screenshots of social media posts.
+      The type 'photo' should be used for images showing photos of people, scenes, etc. 
+      The type 'infographic' should be used for images showing charts or other informative visualizations. 
+      The type 'map' should be used for images showing maps.
+      The type 'meme' should be used for memes.
+      The type 'other' should be used for images that do not match the previous categories. 
+      
+      Output as dict.
